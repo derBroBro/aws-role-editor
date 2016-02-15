@@ -1,0 +1,12 @@
+body, section {
+  width: 500px;
+  height: 200px;
+}
+.less-bottom-margin {
+  margin-bottom: 5px;
+}
+#save {
+  margin-bottom: 10px;
+  width: 66px;
+  margin-right: 5px;
+}

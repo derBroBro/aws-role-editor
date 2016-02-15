@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "AWS Role Editor",
+  "description": "This extension allows you to modify your AWS Cross-Account-Roles",
+  "version": "0.2",
+  "icons": {
+    "128": "icons/128x128-icon.png",
+    "16": "icons/16x16-icon.png"
+  },
+  "browser_action": {
+   "default_icon": "icons/16x16-icon.png",
+   "default_popup": "popup.html"
+  },
+  "permissions": [
+     "cookies",
+     "https://*.aws.amazon.com/*"
+   ]
+}
