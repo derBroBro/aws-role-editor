@@ -16,7 +16,7 @@ https://chrome.google.com/webstore/detail/aws-role-editor/fefjjiapooggkhiicnofcm
 ### Security
 Because many people, including myself, are very sensitive using third party tools in AWS, you can check the code or compile the extension on your own.
 
-### Some Screenshots
+### Screenshots
 #### Editor
 ![example image](https://lh3.googleusercontent.com/_uWwbvqql457gLc2oDq5-vJ6b8pLRTkfdXDC8RkUlRUCDv4WdyhNjVMZ-OGUfyaCBPLszAwQ=s640-h400-e365-rw "AWS Role Editor")
 #### As displayed in the AWS Console
