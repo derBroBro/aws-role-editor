@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var displayname=$("#"+i+"displayname").val();
       var color=$("#"+i+"color").val();
 
-      if(account && role && displayname && color){
+      if(account && role && displayname){
         theCookieValueObj.rl.push({
           a:account,
           r:role,
