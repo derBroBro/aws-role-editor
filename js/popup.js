@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function() {
       row.append($('<td></td>').append($('<input type="text" class="form-control input-sm" name="displayname">').val(displayname)));
       row.append($('<td></td>').append($('<input type="text" name="color">').val(color)));
       row.append($('<td class="text-center vertical-center"><span class="glyphicon glyphicon-trash"></span></td>'));
-      row.append($('<td></td>'));
       $("tbody").append(row);
     }
 
