@@ -1,29 +1,96 @@
-document.addEventListener('DOMContentLoaded', function() {
-  var theCookie = {};
-  var theCookieValue = {};
+document.addEventListener("DOMContentLoaded", function() {
   var theCookieValueObj = {};
 
   $("#saved").hide();
   $("#failed").hide();
 
-  $("#save").click(function() {
-    theCookieValueObj.rl=[];
-    for(var i = 0;i < 5;i++ ){
-      var account=$("#"+i+"account").val();
-      var role=$("#"+i+"role").val();
-      var displayname=$("#"+i+"displayname").val();
-      var color=$("#"+i+"color").val();
-
-      if(account && role && displayname){
-        theCookieValueObj.rl.push({
-          a:account,
-          r:role,
-          d:displayname,
-          c:color
-        });
-      } else {
-      }
+  chrome.cookies.get({ url: "https://console.aws.amazon.com", name: "noflush_awsc-roleInfo" }, function(cookie) {
+    if (!cookie) {
+      $("#failed").show();
+      $("#failed").text("Could not read cookie, sure you use AWS?");
+      return;
     }
+
+    var theCookieValue = cookie.value.replace(/\+/g, "%20"); // workaround as unclear
+    theCookieValue = decodeURIComponent(theCookieValue);
+    theCookieValueObj = JSON.parse(theCookieValue);
+    console.log(theCookieValueObj);
+
+    for (var i=0; i < 5; i++) {
+      console.log(theCookieValueObj.rl[i]);
+
+      var account = "",
+          role = "",
+          displayname = "",
+          color = "";
+
+      if (theCookieValueObj.rl[i] !== undefined) {
+        account = theCookieValueObj.rl[i].a;
+        role = theCookieValueObj.rl[i].r;
+        displayname = decodeURIComponent(theCookieValueObj.rl[i].d);
+        color = theCookieValueObj.rl[i].c;
+      }
+
+      var row = $('<tr></tr>');
+      row.append($('<td class="handle text-center vertical-center"><span class="glyphicon glyphicon-move"></span></td>'));
+      row.append($('<td></td>').append($('<input type="text" class="form-control input-sm" name="account" size="12">').val(account)));
+      row.append($('<td></td>').append($('<input type="text" class="form-control input-sm" name="role">').val(role)));
+      row.append($('<td></td>').append($('<input type="text" class="form-control input-sm" name="displayname">').val(displayname)));
+      row.append($('<td></td>').append($('<input type="text" name="color">').val(color)));
+      row.append($('<td class="text-center vertical-center"><span class="glyphicon glyphicon-trash"></span></td>'));
+      row.append($('<td></td>'));
+      $("tbody").append(row);
+    }
+
+    // Make the enter key submit
+    $("input").keypress(function(e) {
+      if (e.which == 13) {
+        $("form").submit();
+        return false;
+      }
+    });
+
+    // Make the rows draggable
+    $("tbody").sortable({
+      handle: ".handle",
+      cursor: "move",
+    });
+
+    // Activate color pickers
+    $("[name=color]").spectrum({
+      preferredFormat: "hex",
+      showInput: true,
+      allowEmpty: true,
+      showPalette: true,
+    });
+
+    // Activate trash icons
+    $(".glyphicon-trash").click(function() {
+      $(this).parents("tr").find("input").val("");
+    })
+  });
+
+  $("form").submit(function(e) {
+    e.preventDefault();
+    theCookieValueObj.rl = [];
+    $("tbody > tr").each(function() {
+      var account = $("[name=account]", this).val();
+      var role = $("[name=role]", this).val();
+      var displayname = $("[name=displayname]", this).val();
+      var color = $("[name=color]", this).val();
+      if (color[0] == "#") {
+        color = color.substr(1).toUpperCase();
+      }
+
+      if (account && role && displayname) {
+        theCookieValueObj.rl.push({
+          a: account,
+          r: role,
+          d: displayname,
+          c: color
+        });
+      }
+    });
 
     var newCookie = {
       url: "https://console.aws.amazon.com",
@@ -34,54 +101,16 @@ document.addEventListener('DOMContentLoaded', function() {
       value: encodeURIComponent(JSON.stringify(theCookieValueObj))
     };
 
-    chrome.cookies.set(newCookie,function(cookie){
-      if(cookie){
+    chrome.cookies.set(newCookie, function(cookie){
+      if (cookie) {
         $("#saved").show();
         setTimeout(function(){
           window.close();
-        },1000);
+        }, 1000);
       } else {
         $("#failed").show();
-        $("#failed").text("Failed to save cookie...");
-      }
-    })
-  });
-
-  chrome.cookies.get({ url: 'https://console.aws.amazon.com', name: 'noflush_awsc-roleInfo' },
-    function (cookie) {
-      if (cookie) {
-        theCookie = cookie;
-        theCookieValue = cookie.value.replace(/\+/g,"%20");// workarround as unclear
-        theCookieValue = decodeURIComponent(theCookieValue);
-        theCookieValueObj = JSON.parse(theCookieValue);
-        $("#username").text("For user "+theCookieValueObj.bn + " @ " + theCookieValueObj.ba);
-
-
-        var innerContent = ""
-        for(var i = 0;i < 5;i++ ){
-          var account="",
-              role="",
-              displayname="",
-              color="";
-
-          if(theCookieValueObj.rl[i] !== undefined){
-            account = theCookieValueObj.rl[i].a;
-            role = theCookieValueObj.rl[i].r;
-            displayname = decodeURIComponent(theCookieValueObj.rl[i].d);
-            color = theCookieValueObj.rl[i].c;
-          }
-          innerContent+="<tr>"
-          innerContent+="<td><input type='text' class='form-control input-sm' size='12' id='"+i+"account' value='"+account+"'></td>";
-          innerContent+="<td><input type='text' class='form-control input-sm' id='"+i+"role' value='"+role+"'></td>";
-          innerContent+="<td><input type='text' class='form-control input-sm' id='"+i+"displayname' value='"+displayname+"'></td>";
-          innerContent+="<td><input type='text' class='form-control input-sm' size='6' id='"+i+"color' value='"+color+"'></td>";
-          innerContent+="</tr>"
-        }
-        $("#content").html(innerContent);
-      }
-      else {
-        $("#failed").show();
-        $("#failed").text("No cookie found, sure you use AWS?");
+        $("#failed").text("Failed to save cookie.");
       }
     });
+  });
 }, false);
