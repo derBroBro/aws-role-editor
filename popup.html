@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>AWS Role Editor</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/spectrum.css">
   <link rel="stylesheet" href="css/custom.css">
-</head>
 
+  <script src="js/jquery-2.1.4.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/spectrum.js"></script>
+  <script src="js/popup.js"></script>
+</head>
 <body>
   <div class="container-fluid">
     <h4>AWS Role Editor</h4>
-    <div id="username"></div>
-    <table class="table table-condensed less-bottom-margin">
-      <thead>
-        <tr>
-          <th>Account</th>
-          <th>Role</th>
-          <th>Displayname</th>
-          <th>Color</th>
-        </tr>
-      </thead>
-      <tbody id="content">
-      </tbody>
-    </table>
+    <form>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Account</th>
+            <th>Role</th>
+            <th>Display Name</th>
+            <th>Color</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <div class="pull-right">
+        <input type="submit" class="btn btn-primary btn-sm" value="Save">
+      </div>
+    </form>
+    <div class="clearfix"></div>
     <div id="saved" class="alert alert-success" role="alert">Saved</div>
     <div id="failed" class="alert alert-danger" role="alert">Error..</div>
-    <!--<div>Intrested in cloud visit <a href="http://www.itm.net/cloud>">itm.net/cloud</a>-->
-    <div class="pull-right">
-      <button id="save" class="btn btn-primary btn-sm">Save</button>
-    </div>
-    </div>
-
   </div>
-
-  <script src="js/jquery-2.1.4.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/popup.js"></script>
-
 </html>
