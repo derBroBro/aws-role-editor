@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
     $("tbody").sortable({
       handle: ".handle",
       cursor: "move",
+      placeholder: "sortable-placeholder",
     });
 
     // Activate color pickers
