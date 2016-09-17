@@ -11,6 +11,9 @@ td.vertical-center {
 .handle {
   cursor: move;
 }
+.sortable-placeholder {
+  height: 41px;
+}
 .glyphicon-trash {
   cursor: pointer;
 }
