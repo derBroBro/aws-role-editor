@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", function() {
             $("#failed").text("Could not read cookie, sure you use AWS?");
             return;
         }
+        drawForm(cookie);
+    });
 
+    function drawForm(cookie) {
         var theCookieValue = cookie.value.replace(/\+/g, "%20"); // workaround as unclear
         theCookieValue = decodeURIComponent(theCookieValue);
         theCookieValueObj = JSON.parse(theCookieValue);
@@ -71,11 +74,26 @@ document.addEventListener("DOMContentLoaded", function() {
         $(".glyphicon-trash").click(function() {
             $(this).parents("tr").find("input").val("");
         })
-    });
+    };
 
     $("form").submit(function(e) {
         e.preventDefault();
         theCookieValueObj.rl = [];
+        newCookie = createNewCookie();
+        chrome.cookies.set(newCookie, function(cookie) {
+            if (cookie) {
+                $("#saved").show();
+                setTimeout(function() {
+                    window.close();
+                }, 1000);
+            } else {
+                $("#failed").show();
+                $("#failed").text("Failed to save cookie.");
+            }
+        });
+    });
+
+    function createNewCookie() {
         $("tbody > tr").each(function() {
             var account = $("[name=account]", this).val();
             var role = $("[name=role]", this).val();
@@ -104,16 +122,6 @@ document.addEventListener("DOMContentLoaded", function() {
             value: encodeURIComponent(JSON.stringify(theCookieValueObj))
         };
 
-        chrome.cookies.set(newCookie, function(cookie) {
-            if (cookie) {
-                $("#saved").show();
-                setTimeout(function() {
-                    window.close();
-                }, 1000);
-            } else {
-                $("#failed").show();
-                $("#failed").text("Failed to save cookie.");
-            }
-        });
-    });
+        return newCookie;
+    }
 }, false);
