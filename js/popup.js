@@ -1,29 +1,65 @@
 document.addEventListener("DOMContentLoaded", function() {
-    var theCookieValueObj = {};
 
     $("#saved").hide();
     $("#failed").hide();
+    $("#export").hide();
+    $("#save").hide();
 
-    chrome.cookies.get({
-        url: "https://console.aws.amazon.com",
-        name: "noflush_awsc-roleInfo"
-    }, function(cookie) {
-        if (!cookie) {
-            $("#failed").show();
-            $("#failed").text("Could not read cookie, sure you use AWS?");
-            return;
-        }
-        drawForm(cookie);
+    cookie = getCookieFromBrowser();
+
+    $("#import").click(function(e) {
+        alert("import!");
     });
 
-    function drawForm(cookie) {
+    $("#export").click(function(e) {
+        theCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
+        download("export.txt", decodeURIComponent(theCookieValueObj))
+    });
+
+    document.getElementById('file').addEventListener('change', readFile, false);
+
+    function getCookieFromBrowser() {
+        var cookie;
+        chrome.cookies.get({
+            url: "https://console.aws.amazon.com",
+            name: "noflush_awsc-roleInfo"
+        }, function(cookie) {
+            if (!cookie) {
+                $("#failed").show();
+                $("#failed").text("Could not read cookie, sure you use AWS?");
+                return;
+            }
+            theCookieValueObj = decodeCookie(cookie);
+            // console.log(theCookieValueObj);
+            drawForm(theCookieValueObj);
+            $("#export").show();
+            $("#save").show();
+        });
+        return cookie;
+    }
+
+    function decodeCookie(cookie) {
         var theCookieValue = cookie.value.replace(/\+/g, "%20"); // workaround as unclear
         theCookieValue = decodeURIComponent(theCookieValue);
-        theCookieValueObj = JSON.parse(theCookieValue);
+        cookievalue = JSON.parse(theCookieValue);
+        return cookievalue;
+    }
+
+    function encodeCookie(cleartext) {
+        var theCookieValue = encodeURIComponent(JSON.stringify(cleartext))
+        encodedCookie = createNewCookie(theCookieValue);
+        // console.log(encodedCookie);
+        return encodedCookie;
+    }
+
+    function drawForm(theCookieValueObj) {
+        $("tbody").empty();
+        // var theCookieValueObj = {};
+        
         console.log(theCookieValueObj);
 
         for (var i = 0; i < 5; i++) {
-            console.log(theCookieValueObj.rl[i]);
+            // console.log(theCookieValueObj.rl[i]);
 
             var account = "",
                 role = "",
@@ -76,15 +112,15 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     };
 
-    $("form").submit(function(e) {
+    $("#main").submit(function(e) {
         e.preventDefault();
-        theCookieValueObj.rl = [];
-        newCookie = createNewCookie();
+        newCookieValueObj = saveValues();
+        newCookie = createNewCookie(newCookieValueObj);
         chrome.cookies.set(newCookie, function(cookie) {
             if (cookie) {
                 $("#saved").show();
                 setTimeout(function() {
-                    window.close();
+                    // window.close();
                 }, 1000);
             } else {
                 $("#failed").show();
@@ -93,7 +129,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    function createNewCookie() {
+    function saveValues() {
+        var theCookieValueObj = {};
+        theCookieValueObj.rl = [];
         $("tbody > tr").each(function() {
             var account = $("[name=account]", this).val();
             var role = $("[name=role]", this).val();
@@ -112,16 +150,44 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         });
+        return theCookieValueObj;
+    }
 
+    function createNewCookie(cookievalue) {
         var newCookie = {
             url: "https://console.aws.amazon.com",
             domain: "aws.amazon.com",
             secure: true,
             name: "noflush_awsc-roleInfo",
             expirationDate: 3597523199,
-            value: encodeURIComponent(JSON.stringify(theCookieValueObj))
+            value: encodeURIComponent(JSON.stringify(cookievalue))
         };
-
         return newCookie;
+    }
+
+    function download(filename, text) {
+        var pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        pom.setAttribute('download', filename);
+
+        if (document.createEvent) {
+            var event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            pom.dispatchEvent(event);
+        } else {
+            pom.click();
+        }
+    }
+
+    function readFile(evt) {
+        http: //jsfiddle.net/XRZNX/#
+            var files = evt.target.files;
+        var file = files[0];
+        var reader = new FileReader();
+        reader.onload = function() {
+            cookievalue = JSON.parse(this.result);
+            drawForm(cookievalue);
+        }
+        reader.readAsText(file)
     }
 }, false);

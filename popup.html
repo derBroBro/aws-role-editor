@@ -16,9 +16,11 @@
   <script src="js/popup.js"></script>
 </head>
 <body>
+    <div id="saved" class="alert alert-success" role="alert">Saved</div>
+    <div id="failed" class="alert alert-danger" role="alert">Error..</div>
   <div class="container-fluid">
     <h4>AWS Role Editor</h4>
-    <form>
+    <form id="main">
       <table class="table table-condensed">
         <thead>
           <tr>
@@ -33,12 +35,14 @@
         <tbody>
         </tbody>
       </table>
+      <div class="pull-left">
+        <input class="btn btn-primary btn-sm" type="file" id="file" name="file" enctype="multipart/form-data" />
+        <button class="btn btn-primary btn-sm" id="export" type="button">Export</button>
+      </div>
       <div class="pull-right">
-        <input type="submit" class="btn btn-primary btn-sm" value="Save">
+        <input type="submit" class="btn btn-primary btn-sm" id="save" value="Save">
       </div>
     </form>
     <div class="clearfix"></div>
-    <div id="saved" class="alert alert-success" role="alert">Saved</div>
-    <div id="failed" class="alert alert-danger" role="alert">Error..</div>
   </div>
 </html>
