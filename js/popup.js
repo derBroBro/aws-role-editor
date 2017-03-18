@@ -185,11 +185,27 @@ document.addEventListener("DOMContentLoaded", function() {
         var file = files[0];
         var reader = new FileReader();
         reader.onload = function() {
+            if (!isJson(this.result)) {
+                $("#failed").show();
+                $("#failed").text("Could not find a valid export - did you select the right file?");
+                return;
+            }
             cookievalue = JSON.parse(this.result);
             drawForm(cookievalue);
+            $("#failed").hide();
             $("#export").show();
             $("#save").show();
+
         }
         reader.readAsText(file)
+    }
+
+    function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+        return true;
     }
 }, false);
