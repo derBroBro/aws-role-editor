@@ -187,6 +187,8 @@ document.addEventListener("DOMContentLoaded", function() {
         reader.onload = function() {
             cookievalue = JSON.parse(this.result);
             drawForm(cookievalue);
+            $("#export").show();
+            $("#save").show();
         }
         reader.readAsText(file)
     }
