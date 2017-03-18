@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#export").hide();
     $("#save").hide();
 
-    cookie = getCookieFromBrowser();
+    getCookieFromBrowser();
 
     $("#export").click(function(e) {
-        theCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
-        download("export.txt", decodeURIComponent(theCookieValueObj))
+        var theCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
+        download("export.txt", decodeURIComponent(theCookieValueObj));
     });
 
     document.getElementById('file').addEventListener('change', readFile, false);
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 $("#failed").text("Could not read cookie. Either use AWS to create the first Switch Role or import an existing export.");
                 return;
             }
-            theCookieValueObj = decodeCookie(cookie);
+            var theCookieValueObj = decodeCookie(cookie);
             // console.log(theCookieValueObj);
             drawForm(theCookieValueObj);
             $("#export").show();
@@ -37,15 +37,8 @@ document.addEventListener("DOMContentLoaded", function() {
     function decodeCookie(cookie) {
         var theCookieValue = cookie.value.replace(/\+/g, "%20"); // workaround as unclear
         theCookieValue = decodeURIComponent(theCookieValue);
-        cookievalue = JSON.parse(theCookieValue);
+        var cookievalue = JSON.parse(theCookieValue);
         return cookievalue;
-    }
-
-    function encodeCookie(cleartext) {
-        var theCookieValue = encodeURIComponent(JSON.stringify(cleartext))
-        encodedCookie = createNewCookie(theCookieValue);
-        // console.log(encodedCookie);
-        return encodedCookie;
     }
 
     function drawForm(theCookieValueObj) {
@@ -105,13 +98,13 @@ document.addEventListener("DOMContentLoaded", function() {
         // Activate trash icons
         $(".glyphicon-trash").click(function() {
             $(this).parents("tr").find("input").val("");
-        })
+        });
     }
 
     $("#main").submit(function(e) {
         e.preventDefault();
-        newCookieValueObj = saveValues();
-        newCookie = createNewCookie(newCookieValueObj);
+        var newCookieValueObj = saveValues();
+        var newCookie = createNewCookie(newCookieValueObj);
         chrome.cookies.set(newCookie, function(cookie) {
             if (cookie) {
                 $("#saved").show();
@@ -185,14 +178,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 $("#failed").text("Could not find a valid export - did you select the right file?");
                 return;
             }
-            cookievalue = JSON.parse(this.result);
+            var cookievalue = JSON.parse(this.result);
             drawForm(cookievalue);
             $("#failed").hide();
             $("#export").show();
             $("#save").show();
-
-        }
-        reader.readAsText(file)
+        };
+        reader.readAsText(file);
     }
 
     function isJson(str) {
