@@ -7,10 +7,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     cookie = getCookieFromBrowser();
 
-    $("#import").click(function(e) {
-        alert("import!");
-    });
-
     $("#export").click(function(e) {
         theCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
         download("export.txt", decodeURIComponent(theCookieValueObj))
@@ -26,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(cookie) {
             if (!cookie) {
                 $("#failed").show();
-                $("#failed").text("Could not read cookie, sure you use AWS?");
+                $("#failed").text("Could not read cookie. Either use AWS to create the first Switch Role or import an existing export.");
                 return;
             }
             theCookieValueObj = decodeCookie(cookie);
