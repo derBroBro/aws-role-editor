@@ -29,7 +29,7 @@ curl -q -s https://raw.githubusercontent.com/bgrins/spectrum/1.8.0/spectrum.css 
 curl -q -s https://raw.githubusercontent.com/bgrins/spectrum/1.8.0/spectrum.js | diff -s - js/spectrum.js
 ```
 
-last 
+last dependencies update check: 18.03.2017
 
 ### Screenshots
 #### Editor
