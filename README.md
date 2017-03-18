@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/mwiora/aws-role-editor/badges/gpa.svg)](https://codeclimate.com/github/mwiora/aws-role-editor)
+
 # "AWS Role Editor" extension for Google Chrome
 
 This is a Google Chrome extension to manage roles from the Amazon Web Services (AWS) Console Cross Account delegation
