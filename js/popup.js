@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
         $("tbody").sortable({
             handle: ".handle",
             cursor: "move",
-            placeholder: "sortable-placeholder",
+            placeholder: "sortable-placeholder"
         });
 
         // Activate color pickers
@@ -99,14 +99,14 @@ document.addEventListener("DOMContentLoaded", function() {
             preferredFormat: "hex",
             showInput: true,
             allowEmpty: true,
-            showPalette: true,
+            showPalette: true
         });
 
         // Activate trash icons
         $(".glyphicon-trash").click(function() {
             $(this).parents("tr").find("input").val("");
         })
-    };
+    }
 
     $("#main").submit(function(e) {
         e.preventDefault();
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (cookie) {
                 $("#saved").show();
                 setTimeout(function() {
-                    // window.close();
+                    window.close();
                 }, 1000);
             } else {
                 $("#failed").show();
@@ -176,8 +176,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function readFile(evt) {
-        http: //jsfiddle.net/XRZNX/#
-            var files = evt.target.files;
+        var files = evt.target.files;
         var file = files[0];
         var reader = new FileReader();
         reader.onload = function() {
