@@ -31,6 +31,20 @@ curl -q -s https://raw.githubusercontent.com/bgrins/spectrum/1.8.0/spectrum.js |
 
 last dependencies update check: 18.03.2017
 
+### Store the user-role-settings on S3
+
+For enterprise usage deploy the following json-file to redirect the plugin to S3 to read the values.
+The users credentials the access key belongs to have to be capable of reading the userrole-files named identical to the username.
+
+```
+{
+    "s3bucket": "some-s3-bucket",
+    "accessKeyId":"ACCESSKEYID",
+    "secretAccessKey":"SECRET/ACCESS/KEY",
+    "region":""
+}
+```
+
 ### Screenshots
 #### Editor
 ![Editor](https://raw.githubusercontent.com/mwiora/aws-role-editor/master/res/screen02.png "AWS Role Editor")
