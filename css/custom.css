@@ -39,3 +39,7 @@ input[type=submit] {
 .inputfile + label * {
   pointer-events: none;
 }
+
+.table-condensed{
+  font-size: 12px;
+}

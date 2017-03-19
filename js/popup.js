@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#export").hide();
     $("#save").hide();
 
-    getCookieFromBrowser();
+    getRoleCookieFromBrowser();
 
     $("#export").click(function(e) {
         var theCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById('file').addEventListener('change', readFile, false);
 
-    function getCookieFromBrowser() {
+    function getRoleCookieFromBrowser() {
         var cookie;
         chrome.cookies.get({
             url: "https://console.aws.amazon.com",
@@ -34,6 +34,26 @@ document.addEventListener("DOMContentLoaded", function() {
         return cookie;
     }
 
+    function getUserCookieFromBrowser() {
+        var cookie;
+        chrome.cookies.get({
+            url: "https://console.aws.amazon.com",
+            name: "aws-userInfo"
+        }, function(cookie) {
+            if (!cookie) {
+                $("#failed").show();
+                $("#failed").text("Could not read cookie. Either use AWS to create the first Switch Role or import an existing export.");
+                return;
+            }
+            var theCookieValueObj = decodeCookie(cookie);
+            console.log(theCookieValueObj);
+            // alert(theCookieValueObj);
+            $("#export").show();
+            $("#save").show();
+        });
+        return cookie;
+    }
+
     function decodeCookie(cookie) {
         var theCookieValue = cookie.value.replace(/\+/g, "%20"); // workaround as unclear
         theCookieValue = decodeURIComponent(theCookieValue);
@@ -45,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
         $("tbody").empty();
         // var theCookieValueObj = {};
         
-        console.log(theCookieValueObj);
+        // console.log(theCookieValueObj);
 
         for (var i = 0; i < 5; i++) {
             // console.log(theCookieValueObj.rl[i]);
@@ -173,16 +193,30 @@ document.addEventListener("DOMContentLoaded", function() {
         var file = files[0];
         var reader = new FileReader();
         reader.onload = function() {
-            if (!isJson(this.result)) {
+            localfilecontent = this.result;
+            if (!isJson(localfilecontent)) {
                 $("#failed").show();
                 $("#failed").text("Could not find a valid export - did you select the right file?");
                 return;
             }
-            var cookievalue = JSON.parse(this.result);
-            drawForm(cookievalue);
-            $("#failed").hide();
-            $("#export").show();
-            $("#save").show();
+            localfilecontentobj = JSON.parse(localfilecontent);
+            if (localfilecontentobj.hasOwnProperty('rl')){
+                console.log("valid export found!");
+                drawForm(localfilecontentobj);
+                $("#failed").hide();
+                $("#export").show();
+                $("#save").show();
+                return;
+            }
+            if (localfilecontentobj.hasOwnProperty('region')){
+                console.log("valid s3config found!");
+                getConfigFromS3(localfilecontentobj['accessKeyId'], localfilecontentobj['secretAccessKey'], localfilecontentobj['region'], localfilecontentobj['s3bucket'], localfilecontentobj['s3key']);
+                $("#failed").hide();
+                $("#export").show();
+                $("#save").show();
+                return;
+            }
+
         };
         reader.readAsText(file);
     }
@@ -194,5 +228,25 @@ document.addEventListener("DOMContentLoaded", function() {
         return false;
     }
         return true;
+    }
+
+    function getConfigFromS3(accessKeyId, secretAccessKey, region, s3bucket, s3key) {
+        AWS.config.update({
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
+            "region": region
+        });
+        var s3 = new AWS.S3({signatureVersion: 'v4'});
+        var params = {
+            Bucket: s3bucket,
+            Key: s3key
+        };
+        s3.getObject(params, function(err, data) {
+            if (err) console.log(err, err.stack); // an error occurred
+            else {
+                remotefilecontentobj = JSON.parse(data.Body.toString());
+                drawForm(remotefilecontentobj); // successful response
+            }
+        });
     }
 }, false);

@@ -14,6 +14,7 @@
   },
   "permissions": [
     "cookies",
-    "https://console.aws.amazon.com/"
+    "https://console.aws.amazon.com/",
+    "https://*.amazonaws.com/*"
    ]
 }
