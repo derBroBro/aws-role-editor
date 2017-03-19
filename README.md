@@ -33,6 +33,6 @@ last dependencies update check: 18.03.2017
 
 ### Screenshots
 #### Editor
-![Editor](https://raw.githubusercontent.com/mwiora/aws-role-editor/master/res/screen01.png "AWS Role Editor")
+![Editor](https://raw.githubusercontent.com/mwiora/aws-role-editor/master/res/screen02.png "AWS Role Editor")
 #### As displayed in the AWS Console
-![AWS Console](https://raw.githubusercontent.com/mwiora/aws-role-editor/master/res/screen02.png "AWS Role Editor")
+![AWS Console](https://raw.githubusercontent.com/mwiora/aws-role-editor/master/res/screen01.png "AWS Role Editor")
