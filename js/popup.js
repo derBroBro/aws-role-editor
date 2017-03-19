@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#export").hide();
     $("#save").hide();
 
+    // initially always try to load the local cookie
     getRoleCookieFromBrowser();
 
     $("#export").click(function(e) {
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById('file').addEventListener('change', readFile, false);
 
+    // gets the cookie which contains all roles - TODO: calls drawform, but should only return the cookie...
     function getRoleCookieFromBrowser() {
         var rolecookie;
         chrome.cookies.get({
@@ -26,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
             var theRoleCookieValueObj = decodeCookie(rolecookie);
-            // console.log(theRoleCookieValueObj);
             drawForm(theRoleCookieValueObj);
             $("#export").show();
             $("#save").show();
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return rolecookie;
     }
 
+    // gets the cookie which contains username - necessary for s3 access
     function getUserCookieFromBrowser() {
         var usercookie;
         chrome.cookies.get({
@@ -46,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
             var theUserCookieValueObj = decodeCookie(usercookie);
-            console.log(theUserCookieValueObj);
             getConfigFromS3(localfilecontentobj['accessKeyId'], localfilecontentobj['secretAccessKey'], localfilecontentobj['region'], localfilecontentobj['s3bucket'], theUserCookieValueObj['username']);
             $("#export").show();
             $("#save").show();
@@ -54,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return usercookie;
     }
 
+    // extracting the value of any cookie as an object
     function decodeCookie(cookie) {
         var theCookieValue = cookie.value.replace(/\+/g, "%20"); // workaround as unclear
         theCookieValue = decodeURIComponent(theCookieValue);
@@ -61,14 +63,12 @@ document.addEventListener("DOMContentLoaded", function() {
         return cookievalue;
     }
 
+    // drawing the form in popup.html
     function drawForm(theRoleCookieValueObj) {
         $("tbody").empty();
-        // var theRoleCookieValueObj = {};
-        
-        // console.log(theRoleCookieValueObj);
 
+        // aws console does not show more than 5...
         for (var i = 0; i < 5; i++) {
-            // console.log(theRoleCookieValueObj.rl[i]);
 
             var account = "",
                 role = "",
@@ -138,6 +138,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // saves all values from the forms into an cookie-usable object
     function saveValues() {
         var theRoleCookieValueObj = {};
         theRoleCookieValueObj.rl = [];
@@ -162,6 +163,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return theRoleCookieValueObj;
     }
 
+    // creates a new cookie object
     function createNewCookie(cookievalue) {
         var newCookie = {
             url: "https://console.aws.amazon.com",
@@ -174,6 +176,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return newCookie;
     }
 
+    // function to export the current roles into a file
     function download(filename, text) {
         var pom = document.createElement('a');
         pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -188,6 +191,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // function to read an imported file, to check if this file is a json - in case of an already valid cookiecontent just to redraw the form, or to initiate the s3 grab
     function readFile(evt) {
         var files = evt.target.files;
         var file = files[0];
@@ -221,6 +225,7 @@ document.addEventListener("DOMContentLoaded", function() {
         reader.readAsText(file);
     }
 
+    // function to check if imported file is json or not
     function isJson(str) {
     try {
         JSON.parse(str);
@@ -230,6 +235,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return true;
     }
 
+    // function to access s3 based on the informations provided in the local json file - TODO: calls drawform, but should only return the cookie...
     function getConfigFromS3(accessKeyId, secretAccessKey, region, s3bucket, s3key) {
         AWS.config.update({
             accessKeyId: accessKeyId,
