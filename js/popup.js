@@ -8,50 +8,50 @@ document.addEventListener("DOMContentLoaded", function() {
     getRoleCookieFromBrowser();
 
     $("#export").click(function(e) {
-        var theCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
-        download("export.txt", decodeURIComponent(theCookieValueObj));
+        var theRoleCookieValueObj = encodeURIComponent(JSON.stringify(saveValues()));
+        download("export.txt", decodeURIComponent(theRoleCookieValueObj));
     });
 
     document.getElementById('file').addEventListener('change', readFile, false);
 
     function getRoleCookieFromBrowser() {
-        var cookie;
+        var rolecookie;
         chrome.cookies.get({
             url: "https://console.aws.amazon.com",
             name: "noflush_awsc-roleInfo"
-        }, function(cookie) {
-            if (!cookie) {
+        }, function(rolecookie) {
+            if (!rolecookie) {
                 $("#failed").show();
-                $("#failed").text("Could not read cookie. Either use AWS to create the first Switch Role or import an existing export.");
+                $("#failed").text("Could not read role cookie. Either use AWS to create the first Switch Role or import an existing export.");
                 return;
             }
-            var theCookieValueObj = decodeCookie(cookie);
-            // console.log(theCookieValueObj);
-            drawForm(theCookieValueObj);
+            var theRoleCookieValueObj = decodeCookie(rolecookie);
+            // console.log(theRoleCookieValueObj);
+            drawForm(theRoleCookieValueObj);
             $("#export").show();
             $("#save").show();
         });
-        return cookie;
+        return rolecookie;
     }
 
     function getUserCookieFromBrowser() {
-        var cookie;
+        var usercookie;
         chrome.cookies.get({
             url: "https://console.aws.amazon.com",
             name: "aws-userInfo"
-        }, function(cookie) {
-            if (!cookie) {
+        }, function(usercookie) {
+            if (!usercookie) {
                 $("#failed").show();
-                $("#failed").text("Could not read cookie. Either use AWS to create the first Switch Role or import an existing export.");
+                $("#failed").text("Could not read user cookie. Either use AWS to create the first Switch Role or import an existing export.");
                 return;
             }
-            var theCookieValueObj = decodeCookie(cookie);
-            console.log(theCookieValueObj);
-            // alert(theCookieValueObj);
+            var theUserCookieValueObj = decodeCookie(usercookie);
+            console.log(theUserCookieValueObj);
+            getConfigFromS3(localfilecontentobj['accessKeyId'], localfilecontentobj['secretAccessKey'], localfilecontentobj['region'], localfilecontentobj['s3bucket'], theUserCookieValueObj['username']);
             $("#export").show();
             $("#save").show();
         });
-        return cookie;
+        return usercookie;
     }
 
     function decodeCookie(cookie) {
@@ -61,25 +61,25 @@ document.addEventListener("DOMContentLoaded", function() {
         return cookievalue;
     }
 
-    function drawForm(theCookieValueObj) {
+    function drawForm(theRoleCookieValueObj) {
         $("tbody").empty();
-        // var theCookieValueObj = {};
+        // var theRoleCookieValueObj = {};
         
-        // console.log(theCookieValueObj);
+        // console.log(theRoleCookieValueObj);
 
         for (var i = 0; i < 5; i++) {
-            // console.log(theCookieValueObj.rl[i]);
+            // console.log(theRoleCookieValueObj.rl[i]);
 
             var account = "",
                 role = "",
                 displayname = "",
                 color = "";
 
-            if (theCookieValueObj.rl[i] !== undefined) {
-                account = theCookieValueObj.rl[i].a;
-                role = theCookieValueObj.rl[i].r;
-                displayname = decodeURIComponent(theCookieValueObj.rl[i].d);
-                color = theCookieValueObj.rl[i].c;
+            if (theRoleCookieValueObj.rl[i] !== undefined) {
+                account = theRoleCookieValueObj.rl[i].a;
+                role = theRoleCookieValueObj.rl[i].r;
+                displayname = decodeURIComponent(theRoleCookieValueObj.rl[i].d);
+                color = theRoleCookieValueObj.rl[i].c;
             }
 
             var row = $('<tr></tr>');
@@ -139,8 +139,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     function saveValues() {
-        var theCookieValueObj = {};
-        theCookieValueObj.rl = [];
+        var theRoleCookieValueObj = {};
+        theRoleCookieValueObj.rl = [];
         $("tbody > tr").each(function() {
             var account = $("[name=account]", this).val();
             var role = $("[name=role]", this).val();
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             if (account && role && displayname) {
-                theCookieValueObj.rl.push({
+                theRoleCookieValueObj.rl.push({
                     a: account,
                     r: role,
                     d: displayname,
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         });
-        return theCookieValueObj;
+        return theRoleCookieValueObj;
     }
 
     function createNewCookie(cookievalue) {
@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             if (localfilecontentobj.hasOwnProperty('region')){
                 console.log("valid s3config found!");
-                getConfigFromS3(localfilecontentobj['accessKeyId'], localfilecontentobj['secretAccessKey'], localfilecontentobj['region'], localfilecontentobj['s3bucket'], localfilecontentobj['s3key']);
+                getUserCookieFromBrowser();
                 $("#failed").hide();
                 $("#export").show();
                 $("#save").show();
